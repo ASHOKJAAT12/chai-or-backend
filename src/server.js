@@ -1,4 +1,5 @@
 import express from 'express';
+import conectionDB from './db/index.js';
 import dotenv from 'dotenv';
 dotenv.config({
     path: './.env'
@@ -7,10 +8,12 @@ dotenv.config({
 const app = express();
 const PORT = process.env.PORT;
 
-app.get('/',(req, res)=>{
-    res.send("chai or backend");
+conectionDB()
+.then(()=>{
+    app.listen(PORT,()=>{
+        console.log(`server is running at ${PORT}`);
+    })
 })
-
-app.listen(PORT,(req, res)=> {
-    console.log(`server is live on port ${PORT}`);
+.catch( ( error ) => {
+    console.log("Mongodb connection faild.",error);
 })
