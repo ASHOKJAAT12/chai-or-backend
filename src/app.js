@@ -1,4 +1,3 @@
-import mongoose from 'mongoose';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import express from 'express';
@@ -17,5 +16,15 @@ app.use(express.urlencoded({
     extended: true
 }))
 app.use(cookieParser());
+
+
+
+
+
+import userRouter from './routes/user.routes.js';
+
+app.use("/api/v1/users",userRouter)
+
+
 
 export { app };
