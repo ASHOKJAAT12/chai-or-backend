@@ -5,6 +5,20 @@ import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import { User } from '../models/user.models.js'
 import mongoose from 'mongoose';
 
+const generateAccessAndRefreshToken = async (userId) => {
+    try {
+        const user = await User.findOne(userId);
+        const accessToken = user.generateAccessToken();
+        const refreshToken = user.generateRefreshToken();
+
+        user.refreshToken = refreshToken;
+        await user.save({ validateBeforeSave: false});
+
+        return { accessToken, refreshToken };
+    } catch ( error ) {
+        throw new ApiError(500,"somthing is worng while generation access and refresh token.");
+    }
+}
 
 const registerUser = asyncHandler(async (req, res) => {
     //Take input from front end 
