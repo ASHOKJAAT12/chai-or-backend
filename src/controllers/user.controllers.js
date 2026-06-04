@@ -13,7 +13,8 @@ const generateAccessAndRefreshToken = async (userId) => {
 
         user.refreshToken = refreshToken;
         await user.save({ validateBeforeSave: false});
-
+        console.log("token create successfull.");
+        
         return { accessToken, refreshToken };
     } catch ( error ) {
         throw new ApiError(500,"somthing is worng while generation access and refresh token.");
@@ -113,7 +114,7 @@ const userLogin = asyncHandler ( async (req, res) => {
         throw new ApiError(400,"Wrong Password.");
     }
 
-    const {accessToken , refreshToken } = await generateAccessAndRefreshToken(user._id);
+    const {accessToken , refreshToken } = await generateAccessAndRefreshToken(userExist._id);
 
     const loggedUser = await User.findById(userExist._id).select( "-password -refreshToken");
 
