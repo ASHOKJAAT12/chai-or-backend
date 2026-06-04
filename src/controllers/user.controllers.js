@@ -4,6 +4,7 @@ import { ApiResponse } from '../utils/ApiResponse.js';
 import { uploadOnCloudinary } from '../utils/cloudinary.js';
 import { User } from '../models/user.models.js'
 import mongoose from 'mongoose';
+import jwt from 'jsonwebtoken';
 
 const generateAccessAndRefreshToken = async (userId) => {
     try {
@@ -134,7 +135,33 @@ const userLogin = asyncHandler ( async (req, res) => {
     
 })
 
+const logoutUser = asyncHandler ( async (req , res) => {
+    await User.findByIdAndUpdate(
+        req.user._id,
+        {
+            $set: {
+                refreshToken: undefined
+            }
+        },
+        {
+            new: true
+        }
+    )
+    const options = {
+        httpOnly: true,
+        secure: true
+    }
+
+    return res
+    .status(200)
+    .clearCookie("accessToken",options)
+    .clearCookie("refreshToken")
+    .json(
+        new ApiResponse(200,{},"User logout successfully")
+    )
+})
 export {
     registerUser,
-    userLogin
+    userLogin,
+    logoutUser
 };
