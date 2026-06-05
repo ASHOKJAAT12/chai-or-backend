@@ -95,16 +95,14 @@ const userLogin = asyncHandler ( async (req, res) => {
     //check username created
     //check password
 
-    const {username , email , password} = req.body || {}
+    const {username , password} = req.body || {}
 
-    if ( !username || !password || !email ) {
+    if ( !username || !password) {
         throw new ApiError(400,"All field are required.");
     }
-
-    const userExist = await User.findOne({
-        $or: [{username}, {email}]
-    })
-
+    console.log(username)
+    const userExist = await User.findOne({username})
+    console.log(userExist);
     if(!userExist) {
         throw new ApiError(400,"username and email can not register.");
     }
