@@ -199,6 +199,66 @@ const accessRefreshToken = asyncHandler ( async (req, res) => {
         new ApiResponse(200,{accessToken,refreshToken: newrefreshToken},"access token refreshed.")
     )
 })
+
+const changeCurrentPassword = asyncHandler ( async (req, res) => {
+
+    const {oldPassword, newPassword} = req.body || {}
+
+    if ( !oldPassword && !newPassword ) {
+        throw new ApiError(400,"All feild are required.")
+    }
+
+    const user = await User.findById(req.user?._id)
+
+    if ( !user ) {
+        throw new ApiError(401,"user can not find.")
+    }
+
+    const isPassword = await user.isPasswordCorrect(oldPassword);
+
+    if ( !isPassword ) {
+        throw new ApiError(401,"old password is wrong.")
+    }
+
+    user.password = newPassword
+    await user.save({validateBeforeSave: false});
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200,{},"User Password Change successfully.")
+    )
+})
+const updateUserDetails = asyncHandler ( async (req, res) => {
+    const {username, email} = req.body || {}
+
+    if ( !username || !email ) {
+        throw new ApiError(400,"All feild are required.");
+    }
+
+    const user = await User.findByIdAndUpdate(
+        req.user?._id,
+        {
+            $set: {
+                username,
+                email: email
+            }
+        },
+        {
+            new: true
+        }
+    ).select("-password")
+
+    return res
+    .status(200)
+    .json(
+        new ApiResponse(200,user,"user details update successfully.")
+    )
+})
+
+const updateUserAvatar = asyncHandler ( async (req, res) => {
+    
+})
 export {
     registerUser,
     userLogin,
