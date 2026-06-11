@@ -97,7 +97,7 @@ const userLogin = asyncHandler ( async (req, res) => {
 
     const {username , password} = req.body || {}
 
-    if ( !username || !password) {
+    if ( !username && !password) {
         throw new ApiError(400,"All field are required.");
     }
     console.log(username)
@@ -231,17 +231,21 @@ const changeCurrentPassword = asyncHandler ( async (req, res) => {
 })
 
 const updateUserDetails = asyncHandler ( async (req, res) => {
-    const {username, email} = req.body || {}
 
-    if ( !username || !email ) {
+    const {fullName, email} = req.body || {}
+
+    console.log(fullName,email);
+
+    if ( !fullName || !email ) {
         throw new ApiError(400,"All feild are required.");
     }
 
+    
     const user = await User.findByIdAndUpdate(
         req.user?._id,
         {
             $set: {
-                username,
+                fullName,
                 email: email
             }
         },
@@ -249,7 +253,7 @@ const updateUserDetails = asyncHandler ( async (req, res) => {
             new: true
         }
     ).select("-password")
-
+    console.log(user)
     return res
     .status(200)
     .json(
@@ -334,6 +338,7 @@ export {
     registerUser,
     userLogin,
     logoutUser,
+    accessRefreshToken,
     changeCurrentPassword,
     updateUserDetails,
     updateUserAvatar,
